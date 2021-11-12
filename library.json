@@ -1,0 +1,11 @@
+{
+"name":"gurps4eEther",
+"version":"0.0.0",
+"gitUrl":"placeholder",
+"authors":["ether"],
+"license":"AGPL",
+"namespace":"ether.gurps4e",
+"description":"a framework that implements many of the mechanics of GURPS",
+"shortDescription":"GURPS 4e framework made by ether",
+"allowsUriAccess":true
+} 
