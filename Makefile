@@ -1,5 +1,6 @@
 mtlib:
 	git add * 
+	git add .gitignore
 	git commit
 	zip ether.gurps4e.mtlib library events.json library.json
 
