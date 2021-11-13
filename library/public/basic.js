@@ -6,9 +6,9 @@ function findToken(name){
     let tokenId = MTScript.execMacro(`[r:findToken("${name}")]`);
 }
 try{
-    findToken("test");
+    MapTool.chat.broadcast(findToken("test"));
 }
 catch(e){
-    MapTool.chat.broadcast(""+e+"<br>"+e.stack)
+    MapTool.chat.broadcast(""+e+"<br>"+e.stack);
 
 }
