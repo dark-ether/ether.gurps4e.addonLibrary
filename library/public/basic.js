@@ -1,9 +1,9 @@
 function getLibProperty(property, libName ="lib:ether.gurps4e"){
-    let result = MTScript.execMacro(`[r:getLibProperty(${property},${libName})]`);
+    let result = MTScript.execMacro(`[r:getLibProperty("${property}","${libName}")]`);
     return result;
 }
 function findToken(name){
-    let tokenId = MTScript.execMacro(`[r:findToken(${name})]`);
+    let tokenId = MTScript.execMacro(`[r:findToken("${name}")]`);
 }
 try{
     findToken("test");
