@@ -1,2 +1,3 @@
-[r:setLibProperty("test","test")]
-[r:js.evalURI("ether.gurps4e","lib://ether.gurps4e/basic.js")]
+[r:namespace = "ether.gurps4e"]
+[r:js.evalURI(namespace,"lib://ether.gurps4e/basic.js")]
+[r:js.evalURI(namespace,"lib://ether.gurps4e/inventory.js")]
