@@ -1,1 +1,1 @@
-[r:js.evalURI("lib://ether.gurps4e/javascript/test.js")]
+[r:js.evalURI("ether.gurps4e","lib://ether.gurps4e/basic.js")]
