@@ -1,1 +1,1 @@
-todo:add javascript functions here at onInit
+[r:broadcast("todo:add javascript functions here at onInit")]
