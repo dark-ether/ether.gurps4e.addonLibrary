@@ -39,3 +39,11 @@ function createMacroObject(macroName,macroHead="",macrosArray = [],cutOffObject)
     macroObject.cutOff = cutOffObject;
     return macroObject;
 }
+
+function createValueObject(objectOfProperties,...arrayOfApplicable){
+    let valueObject = {
+        properties:objectOfProperties,
+        applicableArray:arrayOfApplicable
+    }
+    return valueObject;
+}
