@@ -29,7 +29,7 @@ function addMacro(tid,macroName,macroGroup,macroText){
     MTScript.setVariable("createdFromJsTid",tid);
     MTScript.setVariable("createdFromJsProps",JSON.stringify(props));
     if(checkForMacro(tid,macroName) != 1){
-    MTScript.evalMacro("[r:createMacro(createFromJSProps,createFromJsTid)]")
+    MTScript.evalMacro("[r:createMacro(createdFromJsProps,createdFromJsTid)]")
     }
 }
 
@@ -43,7 +43,7 @@ function checkForMacro(tid,macroName){
 function removeMacro(tid,macroName){
     MTScript.setVariable("createdFromJsTid",tid);
     MTScript.setVariable("createdFromJsMacroName",macroName);
-    let indexes = JSON.parse(MTScript.evalMacro("[r:getMacroIndexes(createdFromJSMacroName,'json',createdFromJsTid)]"));
+    let indexes = JSON.parse(MTScript.evalMacro("[r:getMacroIndexes(createdFromJsMacroName,'json',createdFromJsTid)]"));
     for(macro of indexes){
         MTScript.setVariable("createdFromJsMacro",macro);
         MTScript.evalMacro("[r:removeMacro(createdFromJsMacro,createdFromJsTid)]");
