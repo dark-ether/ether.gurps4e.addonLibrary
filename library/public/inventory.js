@@ -14,7 +14,7 @@ function createItemType(itemTypeName,arrayOfValuesObjects,
     let item = {};
     item.itemTypeName = itemTypeName;
     item.values = arrayOfValuesObjects;
-    item.propeties = propertiesObject;
+    item.properties = propertiesObject;
     item.macros = arrayOfMacrosObjects;
     items[itemTypeName] = item;
     setLibProperty("items",JSON.stringify(items));
@@ -56,13 +56,17 @@ function createValueObject(objectOfValues,...arrayOfApplicable){
     return valueObject;
 }
 
-function createModifier(arrayOfValueObjects,propertiesObject,arrayOfItems,){
+function createModifier(modifierName,arrayOfValueObjects,propertiesObject,arrayOfItems,typeOfAllow){
     let modifierObject = {
+        "name": modifierName,
         "values": arrayOfValueObjects,
         "properties": propertiesObject,
-        "items": arrayOfItems
+        "items": arrayOfItems,
+        "typeOfAllow":typeOfAllow
     }
-    return modifierObject;
+    let modifiers = JSON.parse(getLibProperty("modifiers"));
+    modifiers[modifierName] = modifierObject;
+    setLibProperty("modifiers",JSON.stringify(modifiers));
 }
 
 function prepareInventory(tid){
@@ -85,6 +89,61 @@ function addBackpack(tid,backpackType,backpackName){
     
     inventory.push(backpack);
     token.setProperty("ether.gurps4e.inventory",JSON.stringify(inventory));
+}
+
+function removeBackpackByLocation(tid,locationNumber){
+    let token =  MapTool.tokens.getTokenByID(tid);
+    let inventory = JSON.parse(token.getProperty("ether.gurps4e.inventory"));
+    inventory.splice(locationNumber,1);
+    token.setProperty("ether.gurps4e.inventory",JSON.stringify(inventory));
+}
+
+function removeBackpackByName(tid,backpackName){
+    let token = MapTool.tokens.getTokenByID(tid);
+    let inventory = JSON.parse(token.getProperty("ether.gurps4e.inventory"));
+    let newInventory = inventory.filter(backpack => backpack.name != backpackName);
+    token.setProperty("ether.gurps4e.inventory",JSON.stringify(newInventory));
+}
+
+function countItemsInInventory(tid,itemType,modifiersObject){
+    let count = 0;
+    let token = MapTool.tokens.getTokenByID(tid);
+    let inventory = JSON.parse(token.getProperty(""));
+    for(let backpack of inventory){
+        for(let item of backpack.items){
+            if(item.itemType == itemType && item.modifiers == modifiersObject){
+                count += item.quantity;
+            }
+        }
+    }
+    return count;
+}
+
+function quantityInLocation(tid,quantityName,locationNumber){
+    let quantity = 0; 
+    let quantityPerItem = 0;
+    let quantityPerModifier = 0; 
+    let quantityFromModifiers = 0;
+    let token = MapTool.tokens.getTokenByID(tid);
+    let inventory = JSON.parse(token.getProperty("ether.gurp4e.inventory"));
+    let itemsInfo = JSON.parse(getLibProperty("items"));
+    let modifiersInfo = JSON.parse(getLibProperty("modifiers"));
+    
+    for(let item of inventory[locationNumber].items){
+        if(quantityName in itemsInfo[item.itemType].properties){
+            quantityPerItem = itemsInfo[item.itemType].properties[quantityName];
+        }       
+        quantity += item.quantity * quantityPerItem;
+        for(let modifier in item.modifiers){
+            if(quantityName in modifierInfo[modifier].properties){
+                quantityPerModifier = modifierInfo[modifier].properties[quantityName];
+            } else{
+                quantityPerModifier = 0;
+            }
+            quantity += quantityPerModifier * item.modifiers[modifier] * item.quantity
+        }
+    }
+    return quantity;
 }
 
 
