@@ -31,6 +31,14 @@ function createObject(){
     return valueObject;
 }
 
+function createCutOffObject(objectWithValues,type="min"){
+    let cutOffObject = {
+        "values": objectWithValues,
+        "type":type
+    };
+    return cutOffObject;
+}
+
 function createMacroObject(macroName,macroHead="",macrosArray = [],cutOffObject){
     let macroObject = {};
     macroObject.macroName = macroName;
@@ -40,10 +48,43 @@ function createMacroObject(macroName,macroHead="",macrosArray = [],cutOffObject)
     return macroObject;
 }
 
-function createValueObject(objectOfProperties,...arrayOfApplicable){
+function createValueObject(objectOfValues,...arrayOfApplicable){
     let valueObject = {
-        properties:objectOfProperties,
+        properties:objectOfValues,
         applicableArray:arrayOfApplicable
     }
     return valueObject;
 }
+
+function createModifier(arrayOfValueObjects,propertiesObject,arrayOfItems,){
+    let modifierObject = {
+        "values": arrayOfValueObjects,
+        "properties": propertiesObject,
+        "items": arrayOfItems
+    }
+    return modifierObject;
+}
+
+function prepareInventory(tid){
+    let token = MapTool.tokens.getTokenByID(tid);
+    token.setProperty("ether.gurps4e.inventory","[]");
+}
+
+function addBackpack(tid,backpackType,backpackName){
+    let token = MapTool.tokens.getTokenByID(tid);
+    let inventory = JSON.parse(token.getProperty("ether.gurps4e.inventory"));
+    if(inventory.filter(backpack => backpack.name == backpackName).length != 0){
+        return ;
+    }
+
+    let backpack = {
+        "backpackType":backpackType,
+        "items": [],
+        "name":backpackName
+    };
+    
+    inventory.push(backpack);
+    token.setProperty("ether.gurps4e.inventory",JSON.stringify(inventory));
+}
+
+

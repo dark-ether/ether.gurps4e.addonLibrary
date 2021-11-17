@@ -17,3 +17,13 @@ function setLibProperty(property, propertyValue, libName="lib:ether.gurps4e"){
     MTScript.evalMacro(`[r:setLibProperty(property,
     propertyValue,libName)]`);
 }
+
+function addMacro(tid,macroName,macroText){
+    let props = {
+        "autoExecute": 1,
+        "command": macroText,
+        "label": macroName,
+        "playerEditable": 0
+    };
+    MTScript.setVariable("createdFromJsTid",tid);
+}
