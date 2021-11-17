@@ -39,7 +39,7 @@ function createCutOffObject(objectWithValues,type="min"){
     return cutOffObject;
 }
 
-function createMacroObject(macroName,macroHead="",macrosArray = [],cutOffObject){
+function createMacroObject(macroName,macroHead="",macroGroup="",macrosArray = [],cutOffObject){
     let macroObject = {};
     macroObject.macroName = macroName;
     macroObject.macroHead = macroHead;

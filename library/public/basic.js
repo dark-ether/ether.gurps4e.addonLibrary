@@ -18,12 +18,34 @@ function setLibProperty(property, propertyValue, libName="lib:ether.gurps4e"){
     propertyValue,libName)]`);
 }
 
-function addMacro(tid,macroName,macroText){
+function addMacro(tid,macroName,macroGroup,macroText){
     let props = {
         "autoExecute": 1,
         "command": macroText,
         "label": macroName,
+        "group": macroGroup,
         "playerEditable": 0
     };
     MTScript.setVariable("createdFromJsTid",tid);
+    MTScript.setVariable("createdFromJsProps",JSON.stringify(props));
+    if(checkForMacro(tid,macroName) != 1){
+    MTScript.evalMacro("[r:createMacro(createFromJSProps,createFromJsTid)]")
+    }
+}
+
+function checkForMacro(tid,macroName){
+    MTScript.setVariable("createdFromJsTid",tid);
+    MTScript.setVariable("createdFromJsMacroName",macroName);
+    let result = MTScript.evalMacro("[r:hasMacro(createdFromJsMacroName,createdFromJsTid)]");
+    return Number(result);
+}
+
+function removeMacro(tid,macroName){
+    MTScript.setVariable("createdFromJsTid",tid);
+    MTScript.setVariable("createdFromJsMacroName",macroName);
+    let indexes = JSON.parse(MTScript.evalMacro("[r:getMacroIndexes(createdFromJSMacroName,'json',createdFromJsTid)]"));
+    for(macro of indexes){
+        MTScript.setVariable("createdFromJsMacro",macro);
+        MTScript.evalMacro("[r:removeMacro(createdFromJsMacro,createdFromJsTid)]");
+    }
 }
