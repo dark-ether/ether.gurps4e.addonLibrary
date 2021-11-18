@@ -43,6 +43,7 @@ function createMacroObject(macroName,macroHead="",macroGroup="",macrosArray = []
     let macroObject = {};
     macroObject.macroName = macroName;
     macroObject.macroHead = macroHead;
+    macroObject.macroGroup = macroGroup;
     macroObject.macrosSources = macrosArray;
     macroObject.cutOff = cutOffObject;
     return macroObject;
@@ -119,31 +120,57 @@ function countItemsInInventory(tid,itemType,modifiersObject){
     return count;
 }
 
-function quantityInLocation(tid,quantityName,locationNumber){
+function getQuantityInLocation(tid,quantityName,locationNumber){
     let quantity = 0; 
     let quantityPerItem = 0;
     let quantityPerModifier = 0; 
-    let quantityFromModifiers = 0;
     let token = MapTool.tokens.getTokenByID(tid);
-    let inventory = JSON.parse(token.getProperty("ether.gurp4e.inventory"));
+    let inventory = JSON.parse(token.getProperty("ether.gurps4e.inventory"));
     let itemsInfo = JSON.parse(getLibProperty("items"));
     let modifiersInfo = JSON.parse(getLibProperty("modifiers"));
-    
-    for(let item of inventory[locationNumber].items){
-        if(quantityName in itemsInfo[item.itemType].properties){
-            quantityPerItem = itemsInfo[item.itemType].properties[quantityName];
-        }       
-        quantity += item.quantity * quantityPerItem;
-        for(let modifier in item.modifiers){
-            if(quantityName in modifierInfo[modifier].properties){
-                quantityPerModifier = modifierInfo[modifier].properties[quantityName];
-            } else{
-                quantityPerModifier = 0;
+    if(inventory[locationNumber] != null){    
+        if(inventory[locationNumber].items.length != 0){
+            for(let item of inventory[locationNumber].items){
+                for(let valueObject of itemsInfo[item.itemType].values){
+                    if(valueObject.applicableArray.includes(inventory[locationNumber].backpackType)){
+                        if(quantityName in valueObject.properties){
+                            quantityPerItem += Number(valueObject.properties[quantityName]);
+                        }
+                    }
+                }
+                quantity += item.quantity * quantityPerItem;
+                for(let modifier in item.modifiers){
+                    if(modifier in modifiersInfo){
+                        let testObjectForQuantity = internalObject => quantityName in internalObject.properties ;
+                        if(modifiersInfo[modifier].values.some(testObjectForQuantity)){
+                            let arrayWithAllRelevant = modifiersInfo[modifier].values.filter(testObjectForQuantity);
+                            for(let internalValueObject of arrayWithAllRelevant){
+                                if(internalValueObject.applicableArray.includes(inventory[locationNumber].backpackType)){
+                                    quantityPerModifier += internalValueObject.properties[quantityName];
+                                }
+                            }
+                        } else{
+                            quantityPerModifier = 0;
+                        }
+                        quantity += quantityPerModifier * item.modifiers[modifier] * item.quantity;
+                    } else{
+                        quantityPerModifier = 0;
+                    }
+                }
             }
-            quantity += quantityPerModifier * item.modifiers[modifier] * item.quantity
         }
     }
     return quantity;
 }
 
+function getQuantity(tid,quantityName){
+    let token = MapTool.tokens.getTokenByID(tid);
+    let inventory = JSON.parse(token.getProperty("ether.gurps4e.inventory"));
+    let quantity = 0;
+    for(let i = 0;i<inventory.length;i++ ){
+        quantity += getQuantityInLocation(tid,quantityName,i);
+    }
+    return quantity;
+}
 
+MapTool.chat.broadcast("inventory.js called");
