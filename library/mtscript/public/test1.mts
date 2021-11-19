@@ -1,1 +1,2 @@
-[r:js.evalURI("ether.gurps4e","lib://ether.gurps4e/test.js",arg(0))]
+[r:broadcast("test1 ran")]
+[r:broadcast(data.getStaticData("@this","mtscript/public/test1.mts"))]

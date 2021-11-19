@@ -55,3 +55,8 @@ function log(info){
     existingLog += "<br>"+info+ new Error().stack;
     setLibProperty("log",existingLog);
 }
+
+function getMacroText(source){
+    MTScript.setVariable("createdFromJsmacroSource",source);
+    return MTScript.evalMacro("[r:data.getStaticData('@this','/mtscript/templates/'+createdFromJsmacroSource+'.mts')]");
+}

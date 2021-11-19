@@ -41,12 +41,12 @@ function createCutOffObject(objectWithValues,type="min"){
     return cutOffObject;
 }
 
-function createMacroObject(macroName,macroHead="",macroGroup="",macrosArray = [],cutOffObject){
+function createMacroObject(macroName,macroHead="",macroGroup="",macrosArray = [],cutOffObject = {}){
     let macroObject = {};
     macroObject.macroName = macroName;
     macroObject.macroHead = macroHead;
     macroObject.macroGroup = macroGroup;
-    macroObject.macrosSources = macrosArray;
+    macroObject.macroSources = macrosArray;
     macroObject.cutOff = cutOffObject;
     return macroObject;
 }
@@ -214,9 +214,7 @@ function getAllowableQuantityInLocation(tid,itemType,modifiersObject,locationNum
         for(let limitObject of backpackInfo.limits){
             let maxFromObject = 0;
             for(let limitName in limitObject){
-                MapTool.chat.broadcast("limitObject[limitName]:"+limitObject[limitName]);
                 let limitValue = Number(MTScript.execMacro(limitObject[limitName]));
-                MapTool.chat.broadcast("limitValue:"+limitValue);
                 let quantityUnderLimit = Infinity;
                 if(!(limitName in objectOfQuantitiesPerItem)){
                     quantityUnderLimit = Infinity;
@@ -225,7 +223,6 @@ function getAllowableQuantityInLocation(tid,itemType,modifiersObject,locationNum
                     quantityUnderLimit = Math.floor((limitValue-getQuantityInLocation(tid,limitName,locationNumber))/
                     objectOfQuantitiesPerItem[limitName]);
                 }
-                MapTool.chat.broadcast("quantityUnderLimit:"+quantityUnderLimit);
                 maxFromObject = Math.max(maxFromObject, quantityUnderLimit);
             }
             allowableQuantity = Math.min(allowableQuantity,maxFromObject);
@@ -243,7 +240,6 @@ function addItemToLocation(tid,itemType,modifiersObject,quantityToAdd,locationNu
     let itemInfo = JSON.parse(getLibProperty("items"))[itemType];
     let backpack = inventory[locationNumber];
     let itemsToAdd = Math.min(getAllowableQuantityInLocation(tid,itemType,modifiersObject,locationNumber),quantityToAdd);
-    MapTool.chat.broadcast("itemsToAdd:"+itemsToAdd);
     let cleanedModifiersObject = {}
     cleanedModifiersObject = Object.assign(cleanedModifiersObject,modifiersObject);
     
@@ -273,20 +269,22 @@ function addItemToLocation(tid,itemType,modifiersObject,quantityToAdd,locationNu
     for(let i = 0; i< itemInfo.macros.length;i++){
         if(getMacroApplicability(tid,itemType,i)){
             let macroText = itemInfo.macros[i].macroHead;
+            for(let macroSource of itemInfo.macros[i].macroSources){
+            macroText += getMacroText(macroSource);
+            }
             addMacro(tid,itemInfo.macros[i].macroName,itemInfo.macros[i].macroGroup,macroText);
         }
     }
 }
 
 function getMacroApplicability(tid,itemType,macroNumber){
-    let token = MapTool.tokens.getTokenByID(tid);
     let itemsInfo = JSON.parse(getLibProperty("items"));
     let itemInfo = itemsInfo[itemType];
     let macroObject = itemInfo.macros[macroNumber];
     let cutOffSatisfied = true;
     for(let cutOff in macroObject.cutOff){
         if(getQuantity(tid,cutOff) < macroObject.cutOff[cutOff]){
-            cutOffSatisfiied = false;
+            cutOffSatisfied = false;
         }
     }
     return cutOffSatisfied;
