@@ -1,4 +1,6 @@
 "use strict"
+log("inventory.js called");
+
 function createBackpackType(backPackTypeName,arrayOfLimitObjects){
     let backpacks = JSON.parse(getLibProperty("backpacks"));
     let backpack = {}
@@ -173,4 +175,119 @@ function getQuantity(tid,quantityName){
     return quantity;
 }
 
-MapTool.chat.broadcast("inventory.js called");
+function getQuantitiesFromItem(itemType,modifiersObject,locationType){
+    let itemsInfo = JSON.parse(getLibProperty("items"));
+    let modifiersInfo = JSON.parse(getLibProperty("modifiers"));
+    let quantitiesObject = {};
+    for(let valueObject of itemsInfo[itemType].values){
+        if(valueObject.applicableArray.includes(locationType)){
+            for(let value in valueObject.properties){
+            quantitiesObject[value] = valueObject.properties[value];
+            }
+        }
+    }
+    for(let modifier in modifiersObject){
+        for(let valueObject of modifiersInfo[modifier].values){
+            if(valueObject.applicableArray.includes(locationType)){
+                for(let value in valueObject.properties){
+                    if(value in quantitiesObject){
+                        quantitiesObject[value] += valueObject.properties[value];
+                    }
+                    else{
+                        quantitiesObject[value] = valueObject.properties[value]; 
+                    }
+                }
+            }
+        }
+    }
+    return quantitiesObject;
+}
+
+function getAllowableQuantityInLocation(tid,itemType,modifiersObject,locationNumber){
+    let token = MapTool.tokens.getTokenByID(tid);
+    let inventory = JSON.parse(token.getProperty("ether.gurps4e.inventory"));
+    let backpackInfo = JSON.parse(getLibProperty("backpacks"))[inventory[locationNumber].backpackType]
+    let allowableQuantity = Infinity;
+    let objectOfQuantitiesPerItem = getQuantitiesFromItem(itemType,modifiersObject,inventory[locationNumber].backpackType);
+    if(locationNumber >= 0 && locationNumber < inventory.length){
+        let backpack = inventory[locationNumber];
+        for(let limitObject of backpackInfo.limits){
+            let maxFromObject = 0;
+            for(let limitName in limitObject){
+                MapTool.chat.broadcast("limitObject[limitName]:"+limitObject[limitName]);
+                let limitValue = Number(MTScript.execMacro(limitObject[limitName]));
+                MapTool.chat.broadcast("limitValue:"+limitValue);
+                let quantityUnderLimit = Infinity;
+                if(!(limitName in objectOfQuantitiesPerItem)){
+                    quantityUnderLimit = Infinity;
+                }
+                else{
+                    quantityUnderLimit = Math.floor((limitValue-getQuantityInLocation(tid,limitName,locationNumber))/
+                    objectOfQuantitiesPerItem[limitName]);
+                }
+                MapTool.chat.broadcast("quantityUnderLimit:"+quantityUnderLimit);
+                maxFromObject = Math.max(maxFromObject, quantityUnderLimit);
+            }
+            allowableQuantity = Math.min(allowableQuantity,maxFromObject);
+        }
+        
+    }else{
+        log("error called getAllowableQuantityinLocation with invalid location number");
+    }
+    return allowableQuantity;
+}
+
+function addItemToLocation(tid,itemType,modifiersObject,quantityToAdd,locationNumber){
+    let token = MapTool.tokens.getTokenByID(tid)
+    let inventory = JSON.parse(token.getProperty("ether.gurps4e.inventory"));
+    let itemInfo = JSON.parse(getLibProperty("items"))[itemType];
+    let backpack = inventory[locationNumber];
+    let itemsToAdd = Math.min(getAllowableQuantityInLocation(tid,itemType,modifiersObject,locationNumber),quantityToAdd);
+    MapTool.chat.broadcast("itemsToAdd:"+itemsToAdd);
+    let cleanedModifiersObject = {}
+    cleanedModifiersObject = Object.assign(cleanedModifiersObject,modifiersObject);
+    
+    for(let property in cleanedModifiersObject){
+        if(cleanedModifiersObject[property] == 0){
+            delete cleanedModifiersObject[property];
+        }
+    }
+    
+    let indexOfItem = backpack.items.findIndex(object => (object.itemtype == itemtype)&&
+    (object.modifiers == cleanedModifiersObject)); 
+    
+    if(indexOfItem != -1){
+        backpack.items[indexOfItem].quantity += itemsToAdd;
+    } else{
+        if(itemsToAdd > 0){
+            backpack.items.push({
+            "quantity":itemsToAdd,
+            "itemType":itemType,
+            "modifiers":cleanedModifiersObject
+            })
+        }
+    }
+    
+    token.setProperty("ether.gurps4e.inventory",JSON.stringify(inventory));
+    
+    for(let i = 0; i< itemInfo.macros.length;i++){
+        if(getMacroApplicability(tid,itemType,i)){
+            let macroText = itemInfo.macros[i].macroHead;
+            addMacro(tid,itemInfo.macros[i].macroName,itemInfo.macros[i].macroGroup,macroText);
+        }
+    }
+}
+
+function getMacroApplicability(tid,itemType,macroNumber){
+    let token = MapTool.tokens.getTokenByID(tid);
+    let itemsInfo = JSON.parse(getLibProperty("items"));
+    let itemInfo = itemsInfo[itemType];
+    let macroObject = itemInfo.macros[macroNumber];
+    let cutOffSatisfied = true;
+    for(let cutOff in macroObject.cutOff){
+        if(getQuantity(tid,cutOff) < macroObject.cutOff[cutOff]){
+            cutOffSatisfiied = false;
+        }
+    }
+    return cutOffSatisfied;
+}

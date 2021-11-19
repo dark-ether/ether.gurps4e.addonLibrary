@@ -19,7 +19,7 @@ function setLibProperty(property, propertyValue, libName="lib:ether.gurps4e"){
 }
 
 function addMacro(tid,macroName,macroGroup,macroText){
-    let props = {
+    let props ={ 
         "autoExecute": 1,
         "command": macroText,
         "label": macroName,
@@ -48,4 +48,10 @@ function removeMacro(tid,macroName){
         MTScript.setVariable("createdFromJsMacro",macro);
         MTScript.evalMacro("[r:removeMacro(createdFromJsMacro,createdFromJsTid)]");
     }
+}
+
+function log(info){
+    let existingLog = getLibProperty("log");
+    existingLog += "<br>"+info+ new Error().stack;
+    setLibProperty("log",existingLog);
 }
