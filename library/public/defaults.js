@@ -12,6 +12,7 @@ try{
     addBackpack(tid,"backpack","backpack");
     
     addItemToLocation(tid,"axe",{},1,0);
+    removeItemsInLocation(tid,"axe",{},1,0);
 }
 catch(e){
 MapTool.chat.broadcast(""+e+"<br>"+e.stack);

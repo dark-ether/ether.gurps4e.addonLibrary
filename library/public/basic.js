@@ -44,7 +44,7 @@ function removeMacro(tid,macroName){
     MTScript.setVariable("createdFromJsTid",tid);
     MTScript.setVariable("createdFromJsMacroName",macroName);
     let indexes = JSON.parse(MTScript.evalMacro("[r:getMacroIndexes(createdFromJsMacroName,'json',createdFromJsTid)]"));
-    for(macro of indexes){
+    for(let macro of indexes){
         MTScript.setVariable("createdFromJsMacro",macro);
         MTScript.evalMacro("[r:removeMacro(createdFromJsMacro,createdFromJsTid)]");
     }
@@ -59,4 +59,36 @@ function log(info){
 function getMacroText(source){
     MTScript.setVariable("createdFromJsmacroSource",source);
     return MTScript.evalMacro("[r:data.getStaticData('@this','/mtscript/templates/'+createdFromJsmacroSource+'.mts')]");
+}
+
+function roll(number,size){
+    MTScript.setVariable("createdFromJavascriptNumber",number);
+    MTScript.setVariable("createdFromJavascriptSize",size);
+    return MTScript.evalMacro("[r:roll(createdFromJavascriptNumber,createdFromJavascriptSize)]");
+
+}
+
+function sucessRoll(skill,modifier){
+    let vRoll = roll(3,6);
+    modifier = (typeof(modifier) === "number")? modifier:0;
+    let effectiveSkill = skill + modifier;
+    let result = "";
+    let margin = 0;
+
+    if(vRoll<= effectiveSkill){
+        result = "sucess";
+        margin =  effectiveSkill - vRoll;
+        if(margin >= 10 || vRoll == 3 || vRoll == 4){
+            result = "critical " + result;
+        }
+    } else {
+        result = "failure";
+        margin = vRoll - effectiveSkill;
+        if(margin >= 10 || vRoll == 18 || (vRoll == 17 && effectiveSkill <= 15)){
+            result = "critical " + result;
+        }
+    }
+    let array = [vRoll,result,margin];
+    
+    return array;
 }

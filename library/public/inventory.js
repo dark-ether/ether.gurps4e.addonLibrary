@@ -250,16 +250,16 @@ function addItemToLocation(tid,itemType,modifiersObject,quantityToAdd,locationNu
     }
     
     let indexOfItem = backpack.items.findIndex(object => (object.itemtype == itemtype)&&
-    (object.modifiers == cleanedModifiersObject)); 
+    (JSON.stringify(object.modifiers) == JSON.stringify(cleanedModifiersObject))); 
     
     if(indexOfItem != -1){
         backpack.items[indexOfItem].quantity += itemsToAdd;
     } else{
         if(itemsToAdd > 0){
             backpack.items.push({
-            "quantity":itemsToAdd,
-            "itemType":itemType,
-            "modifiers":cleanedModifiersObject
+                "quantity":itemsToAdd,
+                "itemType":itemType,
+                "modifiers":cleanedModifiersObject
             })
         }
     }
@@ -275,6 +275,7 @@ function addItemToLocation(tid,itemType,modifiersObject,quantityToAdd,locationNu
             addMacro(tid,itemInfo.macros[i].macroName,itemInfo.macros[i].macroGroup,macroText);
         }
     }
+    return itemsToAdd;
 }
 
 function getMacroApplicability(tid,itemType,macroNumber){
@@ -289,3 +290,59 @@ function getMacroApplicability(tid,itemType,macroNumber){
     }
     return cutOffSatisfied;
 }
+
+function addItemByName(tid,itemType,modifiersObject,quantityToAdd,backpackName){
+    let token = MapTool.tokens.getTokenByID(tid);
+    let inventory = JSON.parse(token.getProperty("ether.gurps4e.inventory"));
+    let backpackIndex = inventory.findIndex(backpack => backpack.name == backpackName)
+    return addItemToLocation(tid,itemType,modifiersObject,quantityToAdd,backpackIndex);
+}
+
+function addItems(tid,itemType,modifiersObject,quantityToAdd){
+    let token = MapTool.tokens.getTokenByID(tid);
+    let inventory = JSON.parse(token.getProperty("ether.gurps4e.inventory"));
+    let itemsToAdd = quantityToAdd;
+    let itemsAdded = 0;
+    for(let i = 0;i<inventory.length;i++){
+        itemsAdded += addItemToLocation(tid,itemType,modifiersObject,itemsToAdd);
+        itemsToAdd = quantityToAdd - itemsAdded;
+    }
+    return itemsAdded;
+}
+
+function removeItemsInLocation(tid,itemType,modifiersObject,quantityToRemove,locationNumber){
+    let token = MapTool.tokens.getTokenByID(tid);
+    let inventory = JSON.parse(token.getProperty("ether.gurps4e.inventory"));
+    let backpack = inventory[locationNumber];
+    let itemInfo = JSON.parse(getLibProperty("items"))[itemType];
+    let removedItems = 0;
+    let itemLeft = true;
+    for(let item of backpack.items){
+        if(item.itemType == itemType && JSON.stringify(item.modifiers) == JSON.stringify(modifiersObject)){
+            if(quantityToRemove>= item.quantity){
+                removedItems = item.quantity
+                backpack.items = backpack.items.filter(object => object.itemType != itemType || JSON.stringify(object.modifiers) != JSON.stringify(modifiersObject));
+                itemLeft = false;
+            } else{
+                item.quantity -= quantityToRemove;
+                removedItems = quantityToRemove;
+            }
+        }
+    }
+    token.setProperty("ether.gurps4e.inventory",JSON.stringify(inventory));
+    
+    for(let i = 0; i<itemInfo.macros.length;i++){
+        let macro = itemInfo.macros[i]
+        if(!itemLeft){
+            removeMacro(tid,macro.macroName);
+        }else{
+            if(!getMacroApplicability(tid,itemType,i)){
+                removeMacro(tid,macro.macroName);
+            }
+        }
+    }
+    
+    return removedItems;
+}
+
+
