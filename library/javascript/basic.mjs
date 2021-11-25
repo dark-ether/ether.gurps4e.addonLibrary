@@ -64,18 +64,18 @@ function getMacroText(source){
 function roll(number,size){
     MTScript.setVariable("createdFromJavascriptNumber",number);
     MTScript.setVariable("createdFromJavascriptSize",size);
-    return MTScript.evalMacro("[r:roll(createdFromJavascriptNumber,createdFromJavascriptSize)]");
+    return Number(MTScript.evalMacro("[r:roll(createdFromJavascriptNumber,createdFromJavascriptSize)]"));
 
 }
 
-function sucessRoll(skill,modifier){
+function sucessRoll(skill,modifier = 0){
     let vRoll = roll(3,6);
     modifier = (typeof(modifier) === "number")? modifier:0;
     let effectiveSkill = skill + modifier;
     let result = "";
     let margin = 0;
 
-    if(vRoll<= effectiveSkill){
+    if((vRoll<= effectiveSkill&&( vRoll != 18)&&( vRoll != 17))||(vRoll == 3 || vRoll == 4)){
         result = "sucess";
         margin =  effectiveSkill - vRoll;
         if(margin >= 10 || vRoll == 3 || vRoll == 4){
