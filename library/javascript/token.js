@@ -18,3 +18,4 @@ function prepareToken(tid){
     token.setProperty("ether.gurps4e.dice.dmg_sw",'1d6');
     token.setProperty("ether,gurps4e.dice.dm_thr",'1d6-2');
 }
+export{ prepareToken};

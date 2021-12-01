@@ -1,6 +1,3 @@
 [r:broadcast("test ran")]
 [r:namespace = "ether.gurps4e"]
-[r:js.evalURI(namespace,"lib://ether.gurps4e/basic.js")]
-[r:js.evalURI(namespace,"lib://ether.gurps4e/inventory.js")]
-[r:js.evalURI(namespace,"lib://ether.gurps4e/token.js")]
-[r:js.evalURI(namespace,"lib://ether.gurps4e/defaults.js", arg(0))]
+[r:js.evalURI(namespace,"lib://ether.gurps4e/javascript/skill.js")]

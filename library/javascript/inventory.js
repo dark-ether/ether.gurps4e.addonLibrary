@@ -1,7 +1,7 @@
-"use strict"
-log("inventory.js called");
+import _ from "../../node_modules/lodash/lodash.js"
+import { log, getLibProperty, setLibProperty, getMacroText, addMacro, removeMacro} from "./basic.js"
 
-function createBackpackType(backPackTypeName,arrayOfLimitObjects){
+export function createBackpackType(backPackTypeName,arrayOfLimitObjects){
     let backpacks = JSON.parse(getLibProperty("backpacks"));
     let backpack = {}
     backpack.typename = backPackTypeName;
@@ -10,7 +10,7 @@ function createBackpackType(backPackTypeName,arrayOfLimitObjects){
     setLibProperty("backpacks",JSON.stringify(backpacks));
 }
 
-function createItemType(itemTypeName,arrayOfValuesObjects,
+export function createItemType(itemTypeName,arrayOfValuesObjects,
     arrayOfMacrosObjects, propertiesObject){
     let items = JSON.parse(getLibProperty("items"));
     let item = {};
@@ -22,18 +22,7 @@ function createItemType(itemTypeName,arrayOfValuesObjects,
     setLibProperty("items",JSON.stringify(items));
 }
 
-function createObject(){
-    //takes pairs of argument and
-    if (arguments.length % 2 === 0){
-        var valueObject = {};
-        for(let i = 0; i< Math.floor(arguments.length/2); i++){
-            valueObject[arguments[ i * 2 ]]= arguments[i * 2 +1];
-        }
-    }
-    return valueObject;
-}
-
-function createCutOffObject(objectWithValues,type="min"){
+export function createCutOffObject(objectWithValues,type="min"){
     let cutOffObject = {
         "values": objectWithValues,
         "type":type
@@ -41,7 +30,7 @@ function createCutOffObject(objectWithValues,type="min"){
     return cutOffObject;
 }
 
-function createMacroObject(macroName,macroHead="",macroGroup="",macrosArray = [],cutOffObject = {}){
+export function createMacroObject(macroName,macroHead="",macroGroup="",macrosArray = [],cutOffObject = {}){
     let macroObject = {};
     macroObject.macroName = macroName;
     macroObject.macroHead = macroHead;
@@ -51,7 +40,7 @@ function createMacroObject(macroName,macroHead="",macroGroup="",macrosArray = []
     return macroObject;
 }
 
-function createValueObject(objectOfValues,...arrayOfApplicable){
+export function createValueObject(objectOfValues,...arrayOfApplicable){
     let valueObject = {
         properties:objectOfValues,
         applicableArray:arrayOfApplicable
@@ -59,7 +48,7 @@ function createValueObject(objectOfValues,...arrayOfApplicable){
     return valueObject;
 }
 
-function createModifier(modifierName,arrayOfValueObjects,propertiesObject,arrayOfItems,typeOfAllow){
+export function createModifier(modifierName,arrayOfValueObjects,propertiesObject,arrayOfItems,typeOfAllow){
     let modifierObject = {
         "name": modifierName,
         "values": arrayOfValueObjects,
@@ -72,12 +61,12 @@ function createModifier(modifierName,arrayOfValueObjects,propertiesObject,arrayO
     setLibProperty("modifiers",JSON.stringify(modifiers));
 }
 
-function prepareInventory(tid){
+export function prepareInventory(tid){
     let token = MapTool.tokens.getTokenByID(tid);
     token.setProperty("ether.gurps4e.inventory","[]");
 }
 
-function addBackpack(tid,backpackType,backpackName){
+export function addBackpack(tid,backpackType,backpackName){
     let token = MapTool.tokens.getTokenByID(tid);
     let inventory = JSON.parse(token.getProperty("ether.gurps4e.inventory"));
     if(inventory.filter(backpack => backpack.name == backpackName).length != 0){
@@ -94,27 +83,27 @@ function addBackpack(tid,backpackType,backpackName){
     token.setProperty("ether.gurps4e.inventory",JSON.stringify(inventory));
 }
 
-function removeBackpackByLocation(tid,locationNumber){
+export function removeBackpackByLocation(tid,locationNumber){
     let token =  MapTool.tokens.getTokenByID(tid);
     let inventory = JSON.parse(token.getProperty("ether.gurps4e.inventory"));
     inventory.splice(locationNumber,1);
     token.setProperty("ether.gurps4e.inventory",JSON.stringify(inventory));
 }
 
-function removeBackpackByName(tid,backpackName){
+export function removeBackpackByName(tid,backpackName){
     let token = MapTool.tokens.getTokenByID(tid);
     let inventory = JSON.parse(token.getProperty("ether.gurps4e.inventory"));
     let newInventory = inventory.filter(backpack => backpack.name != backpackName);
     token.setProperty("ether.gurps4e.inventory",JSON.stringify(newInventory));
 }
 
-function countItemsInInventory(tid,itemType,modifiersObject){
+export function countItemsInInventory(tid,itemType,modifiersObject){
     let count = 0;
     let token = MapTool.tokens.getTokenByID(tid);
     let inventory = JSON.parse(token.getProperty(""));
     for(let backpack of inventory){
         for(let item of backpack.items){
-            if(item.itemType == itemType && item.modifiers == modifiersObject){
+            if(item.itemType == itemType && _.isEqual(item.modifiers, modifiersObject)){
                 count += item.quantity;
             }
         }
@@ -122,7 +111,7 @@ function countItemsInInventory(tid,itemType,modifiersObject){
     return count;
 }
 
-function getQuantityInLocation(tid,quantityName,locationNumber){
+export function getQuantityInLocation(tid,quantityName,locationNumber){
     let quantity = 0; 
     let quantityPerItem = 0;
     let quantityPerModifier = 0; 
@@ -165,7 +154,7 @@ function getQuantityInLocation(tid,quantityName,locationNumber){
     return quantity;
 }
 
-function getQuantity(tid,quantityName){
+export function getQuantity(tid,quantityName){
     let token = MapTool.tokens.getTokenByID(tid);
     let inventory = JSON.parse(token.getProperty("ether.gurps4e.inventory"));
     let quantity = 0;
@@ -175,7 +164,7 @@ function getQuantity(tid,quantityName){
     return quantity;
 }
 
-function getQuantitiesFromItem(itemType,modifiersObject,locationType){
+export function getQuantitiesFromItem(itemType,modifiersObject,locationType){
     let itemsInfo = JSON.parse(getLibProperty("items"));
     let modifiersInfo = JSON.parse(getLibProperty("modifiers"));
     let quantitiesObject = {};
@@ -203,14 +192,13 @@ function getQuantitiesFromItem(itemType,modifiersObject,locationType){
     return quantitiesObject;
 }
 
-function getAllowableQuantityInLocation(tid,itemType,modifiersObject,locationNumber){
+export function getAllowableQuantityInLocation(tid,itemType,modifiersObject,locationNumber){
     let token = MapTool.tokens.getTokenByID(tid);
     let inventory = JSON.parse(token.getProperty("ether.gurps4e.inventory"));
     let backpackInfo = JSON.parse(getLibProperty("backpacks"))[inventory[locationNumber].backpackType]
     let allowableQuantity = Infinity;
     let objectOfQuantitiesPerItem = getQuantitiesFromItem(itemType,modifiersObject,inventory[locationNumber].backpackType);
     if(locationNumber >= 0 && locationNumber < inventory.length){
-        let backpack = inventory[locationNumber];
         for(let limitObject of backpackInfo.limits){
             let maxFromObject = 0;
             for(let limitName in limitObject){
@@ -234,7 +222,7 @@ function getAllowableQuantityInLocation(tid,itemType,modifiersObject,locationNum
     return allowableQuantity;
 }
 
-function addItemToLocation(tid,itemType,modifiersObject,quantityToAdd,locationNumber){
+export function addItemToLocation(tid,itemType,modifiersObject,quantityToAdd,locationNumber){
     let token = MapTool.tokens.getTokenByID(tid)
     let inventory = JSON.parse(token.getProperty("ether.gurps4e.inventory"));
     let itemInfo = JSON.parse(getLibProperty("items"))[itemType];
@@ -249,8 +237,8 @@ function addItemToLocation(tid,itemType,modifiersObject,quantityToAdd,locationNu
         }
     }
     
-    let indexOfItem = backpack.items.findIndex(object => (object.itemtype == itemtype)&&
-    (JSON.stringify(object.modifiers) == JSON.stringify(cleanedModifiersObject))); 
+    let indexOfItem = backpack.items.findIndex(object => (object.itemtype == itemType)&&
+    (_.isEqual(object.modifiers, cleanedModifiersObject))); 
     
     if(indexOfItem != -1){
         backpack.items[indexOfItem].quantity += itemsToAdd;
@@ -278,7 +266,7 @@ function addItemToLocation(tid,itemType,modifiersObject,quantityToAdd,locationNu
     return itemsToAdd;
 }
 
-function getMacroApplicability(tid,itemType,macroNumber){
+export function getMacroApplicability(tid,itemType,macroNumber){
     let itemsInfo = JSON.parse(getLibProperty("items"));
     let itemInfo = itemsInfo[itemType];
     let macroObject = itemInfo.macros[macroNumber];
@@ -291,14 +279,14 @@ function getMacroApplicability(tid,itemType,macroNumber){
     return cutOffSatisfied;
 }
 
-function addItemByName(tid,itemType,modifiersObject,quantityToAdd,backpackName){
+export function addItemByName(tid,itemType,modifiersObject,quantityToAdd,backpackName){
     let token = MapTool.tokens.getTokenByID(tid);
     let inventory = JSON.parse(token.getProperty("ether.gurps4e.inventory"));
     let backpackIndex = inventory.findIndex(backpack => backpack.name == backpackName)
     return addItemToLocation(tid,itemType,modifiersObject,quantityToAdd,backpackIndex);
 }
 
-function addItems(tid,itemType,modifiersObject,quantityToAdd){
+export function addItems(tid,itemType,modifiersObject,quantityToAdd){
     let token = MapTool.tokens.getTokenByID(tid);
     let inventory = JSON.parse(token.getProperty("ether.gurps4e.inventory"));
     let itemsToAdd = quantityToAdd;
@@ -310,7 +298,7 @@ function addItems(tid,itemType,modifiersObject,quantityToAdd){
     return itemsAdded;
 }
 
-function removeItemsInLocation(tid,itemType,modifiersObject,quantityToRemove,locationNumber){
+export function removeItemsInLocation(tid,itemType,modifiersObject,quantityToRemove,locationNumber){
     let token = MapTool.tokens.getTokenByID(tid);
     let inventory = JSON.parse(token.getProperty("ether.gurps4e.inventory"));
     let backpack = inventory[locationNumber];
@@ -318,10 +306,10 @@ function removeItemsInLocation(tid,itemType,modifiersObject,quantityToRemove,loc
     let removedItems = 0;
     let itemLeft = true;
     for(let item of backpack.items){
-        if(item.itemType == itemType && JSON.stringify(item.modifiers) == JSON.stringify(modifiersObject)){
+        if(item.itemType == itemType && _.isEqual( item.modifiers, modifiersObject)){
             if(quantityToRemove>= item.quantity){
                 removedItems = item.quantity
-                backpack.items = backpack.items.filter(object => object.itemType != itemType || JSON.stringify(object.modifiers) != JSON.stringify(modifiersObject));
+                backpack.items = backpack.items.filter(object => object.itemType != itemType || !_.isEqual(object.modifiers,modifiersObject));
                 itemLeft = false;
             } else{
                 item.quantity -= quantityToRemove;

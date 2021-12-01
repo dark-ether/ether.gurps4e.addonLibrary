@@ -3,4 +3,5 @@ mtlib: clean
 	zip -r ether.gurps4e.mtlib library/ events.json library.json
 
 clean: 
-	rm ether.gurps4e.mtlib
+	rm -f ether.gurps4e.mtlib
+	rm -rf ./library/public/javascript/

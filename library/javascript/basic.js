@@ -1,3 +1,4 @@
+
 function getLibProperty(property, libName ="lib:ether.gurps4e"){
     MTScript.setVariable("property",property);
     MTScript.setVariable("libName",libName);
@@ -92,3 +93,7 @@ function sucessRoll(skill,modifier = 0){
     
     return array;
 }
+
+
+
+
