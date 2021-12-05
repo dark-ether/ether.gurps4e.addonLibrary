@@ -7,5 +7,8 @@
 "namespace":"ether.gurps4e",
 "description":"a framework that implements many of the mechanics of GURPS",
 "shortDescription":"GURPS 4e framework made by ether",
-"allowsUriAccess":true
+"allowsUriAccess":true,
+"readMeFile":"README.md",
+"licenseFile":"license.html"
+
 }

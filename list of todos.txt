@@ -1,0 +1,43 @@
+M requires code to be written to work
+CC influences or requires Character creation
+
+traits
+    traits that add attacks M
+    traits that have a roll involved M
+    situational traits M
+
+skills
+    skill roll that takes into account common modifiers(may be too hard and too useless i have the books) M
+    change skill roll to allow using alternative attributes
+combat
+    attacks have defenses M
+    add manuevers M
+    take into account advantages in most things (e.g altered time rate, supernatural durability etc) M
+    mutihex figures M
+
+configurability
+    add option to disable defaults for not meeting requirements of certain type( skills, traits, attribute,technique) M
+    add option to allow players to pick supernatural traits CC
+    add option to allow players to pick exotic traits CC
+    add option to blacklist some non exotic non supernatural traits CC
+    add option to whitelist supernatural or exotic traits CC
+    add option to limit level of traits CC
+    add option to limit level of limitations/enchancements of traits CC
+    add option to allow wildcard skills CC M
+    add option to cap points in disadvantage CC
+    add option to allow malfunction M
+    add option to use hitlocation M
+    add option for special combat rules M
+    tactical combat is not optional M
+    form of configuration
+
+character development
+    add option for players to buy traits CC
+    this is possbly lowest priority GCS exists and it would be a lot  of work to beat it
+
+powers
+    power modifer
+    list of abilites for each power
+    talent for each power
+    option to enable extra effort
+
