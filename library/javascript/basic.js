@@ -94,6 +94,13 @@ function sucessRoll(skill,modifier = 0){
     return array;
 }
 
-
+function calllOnOwner(tid,macroname,args){
+    MTScript.setVariable("createdFromJstid",tid);
+    MTScript.setVariable("createdFromJsMacroname",macroName);
+    MTScript.setVariable("createdFromJsArgs",args);
+    let owner = JSON.parse(MTScript.evalMacro("[r:getOwners('json',createdFromJstid)]"))[0];
+    MTScript.setVariable("createdFromJsOwner",owner);
+    MTScript.evalMacro("[r:broadcast(macroLink('<br>',createdFromJsMacroname,'none',createdFromJsArgs),createdFromJsOwner)]");
+}
 
 
