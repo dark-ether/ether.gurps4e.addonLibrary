@@ -1,64 +1,7 @@
 let  _ = require("lodash");
 let jp  = require("jsonpath");
+let basic = require("../basic.js");
 
-
-function getLibProperty(property, libName ="lib:ether.gurps4e"){
-    MTScript.setVariable("property",property);
-    MTScript.setVariable("libName",libName);
-    let result = MTScript.evalMacro(`[r:getLibProperty(property,libName)]`);
-    return result;
-}
-
-function findToken(name){
-    let tokenId = MTScript.execMacro(`[r:findToken(${name})]`);
-    return tokenId;
-}
-
-function setLibProperty(property, propertyValue, libName="lib:ether.gurps4e"){
-    MTScript.setVariable("property",property);
-    MTScript.setVariable("propertyValue",propertyValue);
-    MTScript.setVariable("libName",libName);
-    MTScript.evalMacro(`[r:setLibProperty(property,
-    propertyValue,libName)]`);
-}
-
-function log(info){
-    let existingLog = getLibProperty("log");
-    existingLog += "<br>"+info+ new Error().stack;
-    setLibProperty("log",existingLog);
-}
-
-function roll(number,size){
-    MTScript.setVariable("createdFromJavascriptNumber",number);
-    MTScript.setVariable("createdFromJavascriptSize",size);
-    return Number(MTScript.evalMacro("[r:roll(createdFromJavascriptNumber,createdFromJavascriptSize)]"));
-
-}
-
-function sucessRoll(skill,modifier = 0){
-    let vRoll = roll(3,6);
-    modifier = (typeof(modifier) === "number")? modifier:0;
-    let effectiveSkill = skill + modifier;
-    let result = "";
-    let margin = 0;
-
-    if((vRoll<= effectiveSkill&&( vRoll != 18)&&( vRoll != 17))||(vRoll == 3 || vRoll == 4)){
-        result = "sucess";
-        margin =  effectiveSkill - vRoll;
-        if(margin >= 10 || vRoll == 3 || vRoll == 4){
-            result = "critical " + result;
-        }
-    } else {
-        result = "failure";
-        margin = vRoll - effectiveSkill;
-        if(margin >= 10 || vRoll == 18 || (vRoll == 17 && effectiveSkill <= 15)){
-            result = "critical " + result;
-        }
-    }
-    let array = [vRoll,result,margin];
-
-    return array;
-}
 
 /*format of default Object {
     "type": either skill, technique or attribute
@@ -99,11 +42,11 @@ function createSkill(skillName,attribute,difficulty,defaultsArray,prereqsArray,f
         "technological":technological
     };
     let hasAddedSkill = false;
-    let skills = JSON.parse(getLibProperty("skills"));
+    let skills = JSON.parse(basic.getLibProperty("skills"));
     MapTool.chat.broadcast(JSON.stringify(defaultsArray)+JSON.stringify(prereqsArray));
     if(skills.filter( skillObject => skillObject.name == skillName).length === 0){
         skills.push(skill);
-        setLibProperty("skills",JSON.stringify(skills));
+        basic.setLibProperty("skills",JSON.stringify(skills));
         hasAddedSkill = true;
     }
     return hasAddedSkill;
@@ -119,12 +62,12 @@ function createSpecialization(skillName,specializationName, defaultsArray = [],p
         "prerequisites": prereqsArray
     };
     let hasAdded = false;
-    let skills = JSON.parse(getLibProperty("skills"));
+    let skills = JSON.parse(basic.getLibProperty("skills"));
     let arrayOfSpecializations = jp.value(skills,"$[?(@.name == '" + skillName + "' )].specializations");
     arrayOfSpecializations.push(specialization);
     jp.value(skills,"$[?(@.name =='"+skillName+"')].specializations",arrayOfSpecializations);
     if(jp.query(arrayOfSpecializations,"$[?(@.name == '" +specializationName+"')]").length == 1){
-        setLibProperty("skills",JSON.stringify(skills));
+        basic.setLibProperty("skills",JSON.stringify(skills));
         hasAdded = true;
     }
     return hasAdded ;
@@ -145,11 +88,11 @@ function createTechnique(techniqueName, max, arrayOfDefaults, arrayOfPrereqs){
         "defaults":arrayOfDefaults,
         "prerequisites":arrayOfPrereqs
     };
-    let techniques = JSON.parse(getLibProperty("techniques"));
+    let techniques = JSON.parse(basic.getLibProperty("techniques"));
     let hasAddedTechnique = false;
     if(jp.value(techniques,`$[?(@.name == ${techniqueName})]`) == undefined){
         techniques.push(technique);
-        setLibProperty("techniques",JSON.stringify(techniques));
+        basic.setLibProperty("techniques",JSON.stringify(techniques));
         hasAddedTechnique = true;
     }
     return hasAddedTechnique;
@@ -158,7 +101,7 @@ function createTechnique(techniqueName, max, arrayOfDefaults, arrayOfPrereqs){
 function prerequisiteCheck(tid,prereqObject){
     let token = MapTool.tokens.getTokenByID(tid);
     let hasPrerequisite = true;
-    let skills = JSON.parse(getLibProperty("skills"));
+    let skills = JSON.parse(basic.getLibProperty("skills"));
     
     if(prereqObject.type == "skill"){
         let tokenSkills = JSON.parse(token.getProperty("ether.gurps4e.skills"));
@@ -184,7 +127,7 @@ function prerequisiteCheck(tid,prereqObject){
     }
 
     if(prereqObject.type == "trait"){
-        log("add check of advantages/disadvantages prerequisites");
+        basic.log("add check of advantages/disadvantages prerequisites");
     }
 
     if(prereqObject.type == "prerequisite_list"){
@@ -232,7 +175,7 @@ function addSkill(tid,skillName,level,specialization = ""){
 
 function checkSkillPrerequisites(tid,skillName){
     let hasPrerequisites = true;
-    let skill = jp.value(JSON.parse(getLibProperty("skills")),`$[?(@.name == "${skillName}")]`);
+    let skill = jp.value(JSON.parse(basic.getLibProperty("skills")),`$[?(@.name == "${skillName}")]`);
     for(let prerequisite of skill.prerequisites){
         if(!prerequisiteCheck(tid,prerequisite)){
             hasPrerequisites = false;
@@ -243,7 +186,7 @@ function checkSkillPrerequisites(tid,skillName){
 }
 
 function checkSpecializationPrerequisites(tid,skillName,specializationName = ""){
-    let skills = JSON.parse(getLibProperty("skills"));
+    let skills = JSON.parse(basic.getLibProperty("skills"));
     let skill = jp.value(skills,`$[?(@.name == "${skillName}")]`)
     let specialization = jp.value(skill,`$.specializations[?(@.name == "${specializationName}")]`);
     let metPrerequisites = true;
@@ -275,7 +218,7 @@ function addTechnique(tid,techniqueName,level){
 
 function checkTechniquePrerequisites(tid,techniqueName){
     let metPrerequisites = true;
-    let technique =  jp.value(JSON.parse(getLibProperty("techniques")),`$[@.name == ${techniqueName}]`);
+    let technique =  jp.value(JSON.parse(basic.getLibProperty("techniques")),`$[@.name == ${techniqueName}]`);
     for(let prerequisite of technique.prerequisites){
         if(!prerequisiteCheck(tid,prerequisite)){
             metPrerequisites = false;
@@ -290,8 +233,8 @@ function getTechniqueAbsoluteLevel(tid,techniqueName){
     let techniqueLevel = -Infinity;
     let tokenSkills = JSON.parse(token.getProperty("ether.gurps4e.skills"));
     let tokenTechniqueLevel = jp.value(JSON.parse(token.getProperty("ether.gurps4e.techniques")),`$[?(@.name == ${techniqueName})].level`);
-    let skills = JSON.parse(getLibProperty("skills"));
-    let techniques = JSON.parse(getLibProperty("techniques"));
+    let skills = JSON.parse(basic.getLibProperty("skills"));
+    let techniques = JSON.parse(basic.getLibProperty("techniques"));
     let defaults = jp.value(techniques,`$[?(@.name == ${techniqueName})].defaults`);
     
     let defaultLevel = defaults.map( skillDefault => {
@@ -316,7 +259,7 @@ function getDefaultValue(tid,skillName,specializationUsed=""){
     let listOfDefaultObjects = [];
     let token = MapTool.tokens.getTokenByID(tid);
     let tokenSkills = JSON.parse(token.getProperty("ether.gurps4e.skills"));
-    let skills = JSON.parse(getLibProperty("skills"));
+    let skills = JSON.parse(basic.getLibProperty("skills"));
     if(jp.query(skills,`$[?(@.name == ${skillName})]`).length == 1){
         if(jp.query(skills,`$[?(@.name == ${skillName})].specializations[?(@.name == ${specializationUsed})]`)
         .length == 1){
@@ -357,19 +300,19 @@ function getDefaultValue(tid,skillName,specializationUsed=""){
 function skillRoll(tid,skillName,specializationUsed = "",modifier = 0){
     let token = MapTool.tokens.getTokenByID(tid);
     let tokenSkills = JSON.parse(token.getProperty("ether.gurp4e.skills"));
-    let skills = JSON.parse(getLibProperty("skills"));
+    let skills = JSON.parse(basic.getLibProperty("skills"));
     let skill = jp.value(skills,`$[?(@.name ==${skillName})]`);
     let skillValue = jp.value(tokenSkills,`$[?(@.name == ${skillName})].level`);
     let skillTest = [];
     
     if(skillValue != undefined){
         if(!isNaN(Number(token.getProperty("ether.gurps4e." + skill.attribute))) ){
-            skillTest = sucessRoll(skillValue +Number(token.getProperty("ether.gurps4e."+skill.attribute)) ,modifier);
+            skillTest = basic.sucessRoll(skillValue +Number(token.getProperty("ether.gurps4e."+skill.attribute)) ,modifier);
         }
     } else {
         let defaultLevel = getDefaultValue(tid,skillName,specializationUsed);
         if(defaultLevel != -Infinity){
-            skillTest = sucessRoll(defaultLevel,modifier);
+            skillTest = basic.sucessRoll(defaultLevel,modifier);
         } 
     }
     return skillTest;

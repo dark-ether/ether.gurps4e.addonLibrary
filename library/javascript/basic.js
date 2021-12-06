@@ -94,7 +94,7 @@ function sucessRoll(skill,modifier = 0){
     return array;
 }
 
-function calllOnOwner(tid,macroname,args){
+function callOnOwner(tid,macroName,args){
     MTScript.setVariable("createdFromJstid",tid);
     MTScript.setVariable("createdFromJsMacroname",macroName);
     MTScript.setVariable("createdFromJsArgs",args);
@@ -109,7 +109,18 @@ function canSeeToken(tidAttacker,tidDefender){
     return MTScript.evalMacro("[r:canSeeToken(createdFromJstidAttacker,createdFromJstidDefender)]");
 }
 
-
+exports.getLibProperty = getLibProperty;
+exports.findToken = findToken;
+exports.setLibProperty = setLibProperty;
+exports.addMacro = addMacro;
+exports.checkForMacro = checkForMacro;
+exports.removeMacro = removeMacro;
+exports.log = log;
+exports.getMacroText = getMacroText;
+exports.roll = roll;
+exports.sucessRoll = sucessRoll;
+exports.callOnOwner = callOnOwner;
+exports.canSeeToken = canSeeToken;
 
 
 
