@@ -1,4 +1,4 @@
-function prepareToken(tid){
+function setTokenToDefault(tid){
     let token = MapTool.tokens.getTokenByID(tid);
     token.setProperty("ether.gurps4e.ST",'10');
     token.setProperty("ether.gurps4e.IQ",'10');
@@ -18,4 +18,4 @@ function prepareToken(tid){
     token.setProperty("ether.gurps4e.dice.dmg_sw",'1d6');
     token.setProperty("ether,gurps4e.dice.dm_thr",'1d6-2');
 }
-export{ prepareToken};
+MTScript.registerMacro("setTokenToDefault",setTokenToDefault);
