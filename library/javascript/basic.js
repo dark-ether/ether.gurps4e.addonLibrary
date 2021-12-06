@@ -20,7 +20,7 @@ function setLibProperty(property, propertyValue, libName="lib:ether.gurps4e"){
 }
 
 function addMacro(tid,macroName,macroGroup,macroText){
-    let props ={ 
+    let props ={
         "autoExecute": 1,
         "command": macroText,
         "label": macroName,
@@ -90,7 +90,7 @@ function sucessRoll(skill,modifier = 0){
         }
     }
     let array = [vRoll,result,margin];
-    
+
     return array;
 }
 
@@ -102,5 +102,17 @@ function calllOnOwner(tid,macroname,args){
     MTScript.setVariable("createdFromJsOwner",owner);
     MTScript.evalMacro("[r:broadcast(macroLink('<br>',createdFromJsMacroname,'none',createdFromJsArgs),createdFromJsOwner)]");
 }
+
+function canSeeToken(tidAttacker,tidDefender){
+    MTScript.setVariable("createdFromJstidAttacker",tidAttacker);
+    MTScript.setVariable("createdFromJstidDefender",tidDefender);
+    return MTScript.evalMacro("[r:canSeeToken(createdFromJstidAttacker,createdFromJstidDefender)]");
+}
+
+
+
+
+
+
 
 
