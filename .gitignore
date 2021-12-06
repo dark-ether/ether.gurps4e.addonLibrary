@@ -2,4 +2,6 @@
 /*.zip
 /*.mtlib
 node_modules/
-library/public/javascript/
+
+/library/public/javascript/
+#should ignore only javascript in public directory not public directory
