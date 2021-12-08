@@ -10,9 +10,9 @@ function attack(attackertid,defendertid,injury,bodyPart="torso",specialEffects={
         "hitlocation":bodyPart,
         "modifications":specialEffects
     }
-    
-    basic.callOnOwner(defendertid,"defenseCall",JSON.stringify(argsObject));
-    
+
+    basic.callOnOwner(defendertid,"callDefense@lib:ether.gurps4e",JSON.stringify(argsObject));
+
 }
 
 MTScript.registerMacro("attack",attack);

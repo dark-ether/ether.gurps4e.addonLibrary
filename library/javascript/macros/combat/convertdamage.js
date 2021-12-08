@@ -18,8 +18,8 @@ function defaultConvertDamageToInjury(damageType){
         case "large piercing":
             return 1,5;
             break;
-        case "impaling"
-        case "huge piercing"
+        case "impaling":
+        case "huge piercing":
             return 2;
             break;
 
