@@ -118,6 +118,11 @@ function calculateStat(tid,statName,reasonsIgnored = []){
         let statFormula = getLibProperty(statName +" formula");
         let evaluatedTotal = 0;
         let totalFromTemporary = 0;
+        
+        if(statAdd == null){
+            statAdd = 0;
+        }
+
         if(temporaryEffectsArray != null && temporaryEffectsArray.length != 0){ 
             let validTemporaryEffects = temporaryEffectsArray.filter(effectObject => !reasonsIgnored.includes(effectObject.reason))
             let stackableEffects = validTemporaryEffects.filter(effectObject => effectObject.stackable);
@@ -162,7 +167,8 @@ function calculateStat(tid,statName,reasonsIgnored = []){
             MapTool:MapTool,
             calculateStat:calculateStat,
             getLibProperty:getLibProperty,
-            MTScript:MTScript
+            MTScript:MTScript,
+            Math:Math
         };
         let data = {
             tid:tid,
