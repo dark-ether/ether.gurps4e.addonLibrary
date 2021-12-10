@@ -4,4 +4,3 @@ mtlib: clean
 
 clean: 
 	rm -f ether.gurps4e.mtlib
-	rm -rf ./library/public/javascript/

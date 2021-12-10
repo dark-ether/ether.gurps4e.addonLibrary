@@ -9,7 +9,7 @@
 <link href="lib://ether.gurps4e/css/main.css?cachelib=false" rel="stylesheet" type="text/css">
 </head>
 <div>
-<a href="[r:macroLinkText('defense/none@lib:ether.gurps4e','all',args)]" class="button">None</a>
+<a href="[r:macroLinkText('defense\\/none@lib:ether.gurps4e','all',args)]" class="button">None</a>
 
 
 [r,if(canDodge),CODE:{

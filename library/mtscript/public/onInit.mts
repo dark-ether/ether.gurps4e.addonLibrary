@@ -1,1 +1,13 @@
 [r:broadcast("todo:add javascript functions here at onInit")]
+[r: setLibProperty("backpacks","{}")]
+[r: setLibProperty("items","{}")]
+[r: setLibProperty("modifiers","{}")]
+<!--  formulas for secondary stats-->
+[r: setLibProperty("BL formula","(calculateStat(tid,'ST',reasonsIgnored) * calculateStat(tid,'ST',reasonsIgnored))/5")]
+[r: setLibProperty("HP formula","(calculateStat(tid,'ST',reasonsIgnored))")]
+[r: setLibProperty("Will formula","(calculateStat(tid,'IQ',reasonsIgnored))")]
+[r: setLibProperty("Per formula","(calculateStat(tid,'IQ',reasonsIgnored))")]
+[r: setLibProperty("FP formula","(calculateStat(tid.'HT',reasonsIgnored))")]
+[r: setlibProperty("BS formula","(calculateStat(tid,'HT',reasonsIgnored) + calculateStat(tid,'DX',reasonsIgnored))/4")]
+[r: setlibProperty("BM formula","Math.floor(calculateStat(tid,'BS',reasonsIgnored))")]
+[r:js.evalURI("ether.gurps4e","lib://ether.gurps4e/javascript/checkStat.js")]
