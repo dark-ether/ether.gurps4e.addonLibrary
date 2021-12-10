@@ -33,7 +33,7 @@ function createBodyPlan(nameOfBodyPlan,arrayOfBodyParts,randomHitList) {
     let bodyPlan = {
         "name":nameOfBodyPlan,
         "composition":arrayOfBodyParts,
-        "ramdom":ramdomHitList
+        "random":ramdomHitList
     };
      let bodyPlans = JSON.parse(basic.getLibProperty("bodyPlanArray"));
      bodyPlans.push(bodyPlan);

@@ -15,4 +15,6 @@ function attack(attackertid,defendertid,injury,bodyPart="torso",specialEffects={
 
 }
 
+
+
 MTScript.registerMacro("attack",attack);
