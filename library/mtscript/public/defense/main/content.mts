@@ -6,7 +6,7 @@
 [h:canBlock = 1]
 [h:canParry = 1]
 <head>
-<link href="lib://test/macro/main.css?cachelib=false" rel="stylesheet" type="text/css">
+<link href="lib://ether.gurps4e/css/main.css?cachelib=false" rel="stylesheet" type="text/css">
 </head>
 <div>
 <a href="[r:macroLinkText('defense/none@lib:ether.gurps4e','all',args)]" class="button">None</a>
