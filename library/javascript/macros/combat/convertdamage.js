@@ -6,22 +6,18 @@ function defaultConvertDamageToInjury(damageType){
     switch (damageType) {
         case "small piercing":
             return 0.5;
-            break;
         case "burning":
         case "corrosion":
         case "fatigue":
         case "piercing":
         case "toxic":
             return 1;
-            break;
         case "cutting":
         case "large piercing":
             return 1,5;
-            break;
         case "impaling":
         case "huge piercing":
             return 2;
-            break;
 
         default:
         return 0;
@@ -40,7 +36,12 @@ function convertDamageToInjury(tid,damage,damageType,bodyPart="torso"){
     if (damageType in bodyPartInfo){
         multiplier = bodyPartInfo.multipliers[damageType];
     } else {
-        multiplier = bodyPartInfo.multipliers.all;
+        if("all" in bodyPartInfo.multipliers){
+            multiplier = bodyPartInfo.multipliers["all"];
+        }
+        else{
+            multiplier = defaultConvertDamageToInjury(damageType);
+        }
     }
     let injury = multiplier * damage;
     return injury;
