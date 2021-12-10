@@ -1,0 +1,9 @@
+{
+    "properties":[
+        {
+            "filename":"public/callDefense.mts",
+            "autoExecute":true,
+            "description":"call the defense form"
+        }
+    ]
+}

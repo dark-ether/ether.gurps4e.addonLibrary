@@ -1,7 +1,8 @@
 const basic = require("../../basic.js");
 
 function attack(attackertid,defendertid,injury,bodyPart="torso",specialEffects={}){
-    let argsObject = {
+    try{
+        let argsObject = {
         "attacker":attackertid,
         "defender":defendertid,
         "injury":injury,
@@ -10,7 +11,10 @@ function attack(attackertid,defendertid,injury,bodyPart="torso",specialEffects={
     }
 
     basic.callOnOwner(defendertid,"callDefense@lib:ether.gurps4e",JSON.stringify(argsObject));
-
+    }
+    catch(e){
+        MapTool.chat.broadcast(""+e+"<br>"+e.stack);
+    }
 }
 
 
