@@ -63,9 +63,11 @@ function dealDamage(defendertid,injury,bodyPart="torso",extra={}){
     if(statToDamage = "FP"){
         currentTarget = "torso";
     }
-    let deathRoll = function (token,currentHP){
-        let rollResults = basic.checkStat;
-        if(rollResults[1] == "failure")
+    let deathRoll = function (tid,currentHP){
+        let rollResults = basic.checkStat(tid,"");
+        if(rollResults[1] == "failure"){
+            basic.
+        }
     };
     if(statToDamage = "HP"){
         if((initialStatValue > -1 *statValue ) && (changedStatValue < -1 * statValue)){
