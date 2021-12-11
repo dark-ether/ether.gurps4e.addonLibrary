@@ -109,7 +109,7 @@ function canSeeToken(tidAttacker,tidDefender){
     MTScript.setVariable("createdFromJstidDefender",tidDefender);
     return MTScript.evalMacro("[r:canSeeToken(createdFromJstidAttacker,createdFromJstidDefender)]");
 }
-
+//check if reasonsIgnored work when js udf bug is fixed
 function calculateStat(tid,statName,reasonsIgnored = []){
     try{
         let token = MapTool.tokens.getTokenByID(tid)
@@ -186,6 +186,14 @@ function calculateStat(tid,statName,reasonsIgnored = []){
     }
 }
 
+function checkStat(tid,statName,modifier = 0){
+    try{
+    const statValue = calculateStat(tid,statName);
+    return JSON.stringify(sucessRoll(statValue,modifier));
+    }catch(e){
+        MapTool.chat.broadcast(""+e+"<br>"+e.stack);
+    }
+}
 
 exports.getLibProperty = getLibProperty;
 exports.findToken = findToken;
@@ -200,7 +208,7 @@ exports.sucessRoll = sucessRoll;
 exports.callOnOwner = callOnOwner;
 exports.canSeeToken = canSeeToken;
 exports.calculateStat = calculateStat;
-
+exports.checkStat = checkStat;
 
 
 

@@ -11,3 +11,8 @@
 [r: setlibProperty("BS formula","(calculateStat(tid,'HT',reasonsIgnored) + calculateStat(tid,'DX',reasonsIgnored))/4")]
 [r: setlibProperty("BM formula","Math.floor(calculateStat(tid,'BS',reasonsIgnored))")]
 [r:js.evalURI("ether.gurps4e","lib://ether.gurps4e/javascript/checkStat.js")]
+<!-- macro definitions -->
+[r:defineFunction("","@this")]
+[r:defineFunction("","@this")]
+[r:defineFunction("","@this")]
+[r:defineFunction("","@this")]
