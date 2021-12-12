@@ -240,7 +240,7 @@ function getTechniqueAbsoluteLevel(tid,techniqueName){
     let defaultLevel = defaults.map( skillDefault => {
         let levelByDefault = -Infinity;
         let skillLevel = jp.value(tokenSkills,`$[?(@.name == ${skillDefault.name})].level`);
-        let attribute = Number(token.getProperty("ether.gurps4e."+jp.value(skills,`$[?(@.name == ${skillDefault.name})].attribute`)));
+        let attribute = basic.calculateStat(tid,jp.value(skills,`$[?(@.name == ${skillDefault.name})].attribute`));
         if((skillLevel != undefined) && !isNaN(attribute)){
             levelByDefault = skillLevel + attribute + skillDefault.modifier;
         }
@@ -304,10 +304,10 @@ function skillRoll(tid,skillName,specializationUsed = "",modifier = 0){
     let skill = jp.value(skills,`$[?(@.name ==${skillName})]`);
     let skillValue = jp.value(tokenSkills,`$[?(@.name == ${skillName})].level`);
     let skillTest = [];
-    
+    let attribute = calculateStat(tid,skill.attribute); 
     if(skillValue != undefined){
         if(!isNaN(Number(token.getProperty("ether.gurps4e." + skill.attribute))) ){
-            skillTest = basic.sucessRoll(skillValue +Number(token.getProperty("ether.gurps4e."+skill.attribute)) ,modifier);
+            skillTest = basic.sucessRoll(skillValue +,modifier);
         }
     } else {
         let defaultLevel = getDefaultValue(tid,skillName,specializationUsed);
