@@ -118,12 +118,12 @@ function calculateStat(tid,statName,reasonsIgnored = []){
         let statFormula = getLibProperty(statName +" formula");
         let evaluatedTotal = 0;
         let totalFromTemporary = 0;
-        
+
         if(statAdd == null){
             statAdd = 0;
         }
 
-        if(temporaryEffectsArray != null && temporaryEffectsArray.length != 0){ 
+        if(temporaryEffectsArray != null && temporaryEffectsArray.length != 0){
             let validTemporaryEffects = temporaryEffectsArray.filter(effectObject => !reasonsIgnored.includes(effectObject.reason))
             let stackableEffects = validTemporaryEffects.filter(effectObject => effectObject.stackable);
             let valuesFromStacked = stackableEffects.reduce((objectOfValues,current) => {
@@ -135,9 +135,9 @@ function calculateStat(tid,statName,reasonsIgnored = []){
                 }
                 return objectOfValues;
             },{});
-            
+
             let nonStackableEffects = validTemporaryEffects.filter(effectObject => !effectObject.stackable);
-            
+
             let valuesFromNonStacked = nonStackableEffects.reduce((objectOfValues,current)=>{
                 if(current.reason in objectOfValues){
                     if(current.value > objectOfValues[current.reason]){
@@ -148,7 +148,7 @@ function calculateStat(tid,statName,reasonsIgnored = []){
                 }
                 return objectOfValues;
             },{});
-            
+
             let valuesFromTemporary = _.mergeWith(valuesFromStacked,valuesFromNonStacked,(objValue,srcValue) => {
                 if(objValue > srcValue){
                     return objValue;
@@ -157,12 +157,12 @@ function calculateStat(tid,statName,reasonsIgnored = []){
                     return srcValue;
                 }
             });
-        
+
             for(let reason in valuesFromTemporary){
                 totalFromTemporary += valuesFromTemporary[reason];
             }
         }
-        
+
         let operators = {
             MapTool:MapTool,
             calculateStat:calculateStat,
@@ -174,7 +174,7 @@ function calculateStat(tid,statName,reasonsIgnored = []){
             tid:tid,
             reasonsIgnored:reasonsIgnored
         };
-        
+
         let args = {...operators,...data};
         if(statFormula!= null && statFormula != ""){
             evaluatedTotal = evaluate(statFormula,args);
@@ -186,6 +186,33 @@ function calculateStat(tid,statName,reasonsIgnored = []){
     }
 }
 
+function setState(tid,state){
+    MTScript.setVariable("createdFromJstid",tid);
+    MTScript.setVariable("createdFromJsstate",state);
+    MTScript.evalMacro("[r:setState(createdFromJsstate,1,createdFromJstid"])
+}
+
+function unsetState(tid,state){
+    MTScript.setVariable("createdFromJstid",tid);
+    MTScript.setVariable("createdFromJsstate",state);
+    MTScript.evalMacro("[r:setState(createdFromJsstate,0,createdFromJstid"])
+}
+
+function isPC(tid){
+    MTScript.setVariable("idToken",tid)
+    return MTScript.evalMacro("[r:isPC(idToken)]");
+
+}
+
+function textToChat(tid,results,context){
+    let token = MapTool.tokens.getTokenByID(tid)
+    if(isPC(tid)){
+        MapTool.chat.broadcast("on the roll for "+context+" "+token.getName()+ " got a "+
+        results[0] + "that is a " + results[1] + " by "+results[2]);
+    }else {
+        MapTool.chat.broadcastToGM(context+" "+token.getName()+": "+JSON.stringify(results));
+    }
+}
 
 exports.getLibProperty = getLibProperty;
 exports.findToken = findToken;
@@ -200,8 +227,7 @@ exports.sucessRoll = sucessRoll;
 exports.callOnOwner = callOnOwner;
 exports.canSeeToken = canSeeToken;
 exports.calculateStat = calculateStat;
-
-
-
-
-
+exports.setState = setState;
+exports.unsetState = unsetState;
+exports.isPC = isPC;
+exports.textToChat = textToChat
