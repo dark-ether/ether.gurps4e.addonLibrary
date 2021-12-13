@@ -1,5 +1,6 @@
 const evaluate = require("safe-evaluate-expression");
 const _ = require("lodash");
+const jp = require("jsonpath");
 
 function getLibProperty(property, libName ="lib:ether.gurps4e"){
     MTScript.setVariable("property",property);
@@ -217,6 +218,7 @@ function textToChat(tid,results,context){
         MapTool.chat.broadcastToGM(context+" "+token.getName()+": "+JSON.stringify(results));
     }
 }
+
 function checkStat(tid,statName,modifier = 0){
     try{
     const statValue = calculateStat(tid,statName);
@@ -224,6 +226,96 @@ function checkStat(tid,statName,modifier = 0){
     }catch(e){
         MapTool.chat.broadcast(""+e+"<br>"+e.stack);
     }
+}
+
+function calculateDr(tid,damageType,bodyPart="torso"){
+    let naturalDr = getTraitEffectiveLevel(tid,"damage resistance",{"damageType":damageType})
+    let equipmentDr;
+    let token = MapTool.tokens.getTokenByID(tid);
+    let equipped = JSON.parse(token.getProperty("ether.gurps.items.equipped"));
+    let itemsInfo = JSON.parse(getLibProperty("items"));
+    let  armorEquipped = equipped.filter(item => {
+        let itemInfo = jp.value(itemsInfo,`$[?(@.name == ${item.name})]`);
+        return ( "dr" in itemInfo.properties.equipped);
+    });
+    let drForEach = armorEquipped.map(item => {
+        let dr = 0;
+        let itemInfo = jp.value(itemsInfo,`$[?(@.name == ${item.name})]`);
+        for(let drInfo of itemInfo.properties.equipped.dr){
+            if(("limited" in drInfo) && drInfo.limited.includes(damageType)){
+                dr += drInfo.value;
+            }
+            if(("weakness" in drInfo)&& !drInfo.weakness.includes(damageType)){
+                dr += drInfo.value;
+            }
+        }
+        return dr;
+    }) 
+    let equipmentDr = drForEach.reduce((accumulated,dr)=> accumulated+dr,0);
+    let overallDr = naturalDr + equipmentDr;
+    return overallDr;
+}
+
+function getTraitEffectiveLevel(tid,traitName,conditions={},traitSubtype=""){
+    let effectiveLevels = {};
+    let token = MapTool.tokens.getTokenByID(tid);
+    let tokenTraits = JSON.parse(token.getProperty("ether.gurps4e.traits"));
+    let tokenTraits = tokenTraits.filter(trait => trait.type == traitName);
+    for(let trait of tokenTraits){
+        let isApplicable = true;
+        for(let modifier of trait.modifiers){
+            if(modifier.type == "acessibility"){
+                if(modifier.condition.type == "limited to"){
+                    isApplicable = false;
+                    for(let conditionGroup in modifier.condition.checks){
+                        if(getConditionApplicability(conditions,conditionGroup,
+                        modifier.condition.checks[conditionGroup])){
+                            isApplicable = true;
+                        }
+                    }
+                }
+                if(modifier.condition.type == "not on"){
+                    for(let conditionGroup in modifier.condition.checks){
+                        if(getConditionApplicability(conditions,conditionGroup,
+                            modifier.condition.checks[conditionGroup])){
+                            isApplicable = false;
+                        }
+                    }
+                }
+            }
+        }
+        if(isApplicable){
+            if(typeof trait.level == "number"){
+                if("normal" in effectiveLevels){
+                    effectiveLevels.normal += trait.level;
+                } else{
+                    effectiveLevels.normal = trait.level;
+                }
+            } else if(typeof trait.level == "object"){
+                for(let levelType in trait.level){
+                    if(levelType in effectiveLevels){
+                        effectiveLevels[levelType] += trait.level[levelType]; 
+                    } else{
+                        effectiveLevels[levelType] = trait.level[levelType];
+                    }
+                }
+            }
+        }
+    }
+    if((Object.keys(effectiveLevels).length == 1 )&& ("normal" in effectiveLevels)){
+        effectiveLevels = effectiveLevels.normal;
+    }
+    return effectiveLevels;
+}
+
+function getConditionApplicability(conditions,conditionGroupName,conditionGroup){
+    let applicability = false;
+    for(let condition in conditions){
+        if(condition == conditionGroupName && conditionGroup.includes(conditions[condition])){
+            applicability = true;
+        }
+    }
+    return applicability;
 }
 
 exports.getLibProperty = getLibProperty;
@@ -244,3 +336,5 @@ exports.unsetState = unsetState;
 exports.isPC = isPC;
 exports.textToChat = textToChat
 exports.checkStat = checkStat;
+exports.calculateDr = calculateDr;
+exports.getTratEffectiveLevel = getTraitEffectiveLevel;

@@ -47,6 +47,20 @@ function convertDamageToInjury(tid,damage,damageType,bodyPart="torso"){
     return injury;
 }
 
+function calculateRealDamage(defendertid,previousDamage,damageType,bodyPart = "torso"){
+    let damage;
+    let defender = MapTool.tokens.getTokenByID(defendertid);
+    let dr = basic.calculateDr(defender,bodyPart);
+    let divisor = Number(basic.getTraitEffectiveLevel("damage reduction",{"damageType":damageType},"normal")) + 1;
+    if(!isNaN(divisor)){
+        damage = (previousDamage-dr)/previousDamage;
+    }else{
+        damage = previousDamage - dr;
+    }
+    
+    return damage;
+}
+
 function dealDamage(defendertid,injury,bodyPart="torso",extra={}){
     let defender = MapTool.tokens.getTokenByID(defendertid);
     let statToDamage = "HP";
