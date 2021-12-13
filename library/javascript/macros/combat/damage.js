@@ -51,7 +51,7 @@ function calculateRealDamage(defendertid,previousDamage,damageType,bodyPart = "t
     let damage;
     let defender = MapTool.tokens.getTokenByID(defendertid);
     let dr = basic.calculateDr(defender,bodyPart);
-    let divisor = Number(basic.getTraitEffectiveLevel("damage reduction",{"damageType":damageType},"normal")) + 1;
+    let divisor = Number(basic.getTraitEffectiveLevel("damage reduction",{"damageType":damageType})) + 1;
     if(!isNaN(divisor)){
         damage = (previousDamage-dr)/previousDamage;
     }else{
@@ -61,42 +61,4 @@ function calculateRealDamage(defendertid,previousDamage,damageType,bodyPart = "t
     return damage;
 }
 
-function dealDamage(defendertid,injury,bodyPart="torso",extra={}){
-    let defender = MapTool.tokens.getTokenByID(defendertid);
-    let statToDamage = "HP";
-    
-    if("statToDamage" in extra){
-        statToDamage = extra.statToDamage;
-    }
-    let statValue = Number(defender.getProperty("ether.gurps4e."+statToDamage));
-    let initialStatValue = Number(defender.getProperty("ether.gurps4e.c"+statToDamage));
-    let changedStatValue = initialStatValue - injury;
-    let currentTarget = bodyPart;
-    defender.setProperty("ether.gurps4e.c"+statToDamage); 
-    
-    if(statToDamage = "FP"){
-        currentTarget = "torso";
-    }
-    let deathRoll = function (tid,currentHP){
-        let rollResults = basic.checkStat(tid,"");
-        if(rollResults[1] == "failure"){
-            basic.
-        }
-    };
-    if(statToDamage = "HP"){
-        if((initialStatValue > -1 *statValue ) && (changedStatValue < -1 * statValue)){
-            
-        }
-        if((initialStatValue > -2 *statValue ) && (changedStatValue < -2 * statValue)){
-            
-        }
-        if((initialStatValue > -3 *statValue ) && (changedStatValue < -3 * statValue)){
-            
-        }
-        if((initialStatValue > -4 *statValue ) && (changedStatValue < -4 * statValue)){
-            
-        }
-            
-    }
-}
 

@@ -208,7 +208,7 @@ let midLegObject = createBodyPart("mid leg",
 },{
     majorWound:"cripple mid leg",
     damageLimit:true,
-    "majorWoundthreshold":1/2})
+    "majorWoundthreshold":1/2});
 
 let brainObject = createBodyPart("brain",
     -7,
@@ -218,12 +218,12 @@ let brainObject = createBodyPart("brain",
     dr:1,
     missHitTorso:1,
     alternateCriticalTable:true,
-    knockdown:-10})
+    knockdown:-10});
 
 let finObject = createBodyPart("fin",-4,{},
    {majorWound:"cripple foot",
    damageLimit:true,
-   "majorWoundthreshold":1/3}),
+   "majorWoundthreshold":1/3});
 
 createBodyPlan("humanoid",[
     _.cloneDeep(eyeObject),

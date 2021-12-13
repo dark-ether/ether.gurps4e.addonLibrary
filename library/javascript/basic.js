@@ -194,13 +194,13 @@ function calculateStat(tid,statName,reasonsIgnored = []){
 function setState(tid,state){
     MTScript.setVariable("createdFromJstid",tid);
     MTScript.setVariable("createdFromJsstate",state);
-    MTScript.evalMacro("[r:setState(createdFromJsstate,1,createdFromJstid"])
+    MTScript.evalMacro("[r:setState(createdFromJsstate,1,createdFromJstid]");
 }
 
 function unsetState(tid,state){
     MTScript.setVariable("createdFromJstid",tid);
     MTScript.setVariable("createdFromJsstate",state);
-    MTScript.evalMacro("[r:setState(createdFromJsstate,0,createdFromJstid"])
+    MTScript.evalMacro("[r:setState(createdFromJsstate,0,createdFromJstid]");
 }
 
 function isPC(tid){
@@ -242,15 +242,18 @@ function calculateDr(tid,damageType,bodyPart="torso"){
         let dr = 0;
         let itemInfo = jp.value(itemsInfo,`$[?(@.name == ${item.name})]`);
         for(let drInfo of itemInfo.properties.equipped.dr){
-            if(("limited" in drInfo) && drInfo.limited.includes(damageType)){
-                dr += drInfo.value;
-            }
-            if(("weakness" in drInfo)&& !drInfo.weakness.includes(damageType)){
-                dr += drInfo.value;
-            }
+            if(drInfo.bodyPart == bodyPart){
+                if(("limited to" in drInfo) && drInfo["limited to"].includes(damageType)){
+                    dr += drInfo.value;
+                }
+                if(("not on" in drInfo)&& !drInfo["not on"].includes(damageType)){
+                    dr += drInfo.value;
+                }
+        }
         }
         return dr;
-    }) 
+        
+    }); 
     let equipmentDr = drForEach.reduce((accumulated,dr)=> accumulated+dr,0);
     let overallDr = naturalDr + equipmentDr;
     return overallDr;
@@ -302,8 +305,11 @@ function getTraitEffectiveLevel(tid,traitName,conditions={},traitSubtype=""){
             }
         }
     }
-    if((Object.keys(effectiveLevels).length == 1 )&& ("normal" in effectiveLevels)){
+    if((Object.keys(effectiveLevels).length == 1 ) && ("normal" in effectiveLevels)){
         effectiveLevels = effectiveLevels.normal;
+    }
+    if((typeof effectiveLevels ) == "object" && traitSubtype in effectiveLevels){
+        effectiveLevels = effectiveLevels[traitSubtype];
     }
     return effectiveLevels;
 }
@@ -337,4 +343,5 @@ exports.isPC = isPC;
 exports.textToChat = textToChat
 exports.checkStat = checkStat;
 exports.calculateDr = calculateDr;
-exports.getTratEffectiveLevel = getTraitEffectiveLevel;
+exports.getTraitEffectiveLevel = getTraitEffectiveLevel;
+

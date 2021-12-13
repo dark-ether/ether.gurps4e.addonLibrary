@@ -1,9 +1,11 @@
 const basic = require("../../basic.js")
+const jp = require("jsonpath");
 
 function dealDamage(defendertid,injury,bodyPart="torso",extra={}){
     let defender = MapTool.tokens.getTokenByID(defendertid);
     let statToDamage = "HP";
-
+    let defenderBody = JSON.parse(defender.getProperty("ether.gurps4e.body"));
+    let bodiesInfo = JSON.parse(getLibProperty("bodyPlanArray"));
     if("statToDamage" in extra){
         statToDamage = extra.statToDamage;
     }
@@ -66,4 +68,5 @@ function dealDamage(defendertid,injury,bodyPart="torso",extra={}){
         }
 
     }
+    let bodyType = 
 }
