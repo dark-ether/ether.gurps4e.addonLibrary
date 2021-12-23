@@ -304,10 +304,13 @@ function skillRoll(tid,skillName,specializationUsed = "",modifier = 0){
     let skill = jp.value(skills,`$[?(@.name ==${skillName})]`);
     let skillValue = jp.value(tokenSkills,`$[?(@.name == ${skillName})].level`);
     let skillTest = [];
-    let attribute = calculateStat(tid,skill.attribute); 
+    let attribute = basic.calculateStat(tid,skill.attribute); 
     if(skillValue != undefined){
-        if(!isNaN(Number(token.getProperty("ether.gurps4e." + skill.attribute))) ){
-            skillTest = basic.sucessRoll(skillValue +,modifier);
+        if(!isNaN( attribute)){
+            skillTest = basic.sucessRoll(skillValue + attribute,modifier);
+        }
+        else{
+            skillTest = basic.sucessroll(skillValue,modifier);
         }
     } else {
         let defaultLevel = getDefaultValue(tid,skillName,specializationUsed);

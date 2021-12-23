@@ -254,7 +254,7 @@ function calculateDr(tid,damageType,bodyPart="torso"){
         return dr;
         
     }); 
-    let equipmentDr = drForEach.reduce((accumulated,dr)=> accumulated+dr,0);
+    equipmentDr = drForEach.reduce((accumulated,dr)=> accumulated+dr,0);
     let overallDr = naturalDr + equipmentDr;
     return overallDr;
 }
@@ -263,7 +263,7 @@ function getTraitEffectiveLevel(tid,traitName,conditions={},traitSubtype=""){
     let effectiveLevels = {};
     let token = MapTool.tokens.getTokenByID(tid);
     let tokenTraits = JSON.parse(token.getProperty("ether.gurps4e.traits"));
-    let tokenTraits = tokenTraits.filter(trait => trait.type == traitName);
+    tokenTraits = tokenTraits.filter(trait => trait.type == traitName);
     for(let trait of tokenTraits){
         let isApplicable = true;
         for(let modifier of trait.modifiers){

@@ -1,5 +1,4 @@
 const basic = require('../../basic.js');
-const jp = require("jsonpath");
 const _ = require("lodash");
 /*
 {body object syntas
@@ -7,7 +6,7 @@ name:
 composition:array of objects which follow bodypart syntax
 randomhit: array of name of bodypart
 }
-{body part synstax
+{body part syntax
 name:
 modifier:negative Number,
 multipliers:{ object with key number pairs and maybe one property named all,
@@ -320,7 +319,7 @@ createBodyPlan("fish-tailed humanoid",[
 createBodyPlan("snake-men",[
     _.cloneDeep(eyeObject),
     _.cloneDeep(skullObject),
-    _.cloneDeep(faceObject)
+    _.cloneDeep(faceObject),
     _.cloneDeep(neckObject),
     _.cloneDeep(rightArmObject),
     _.cloneDeep(torsoObject),
@@ -375,7 +374,7 @@ createBodyPlan("centaur",[
 {name:"vitals",space:0}])
 
 createBodyPlan("quadruped",[
-    _.cloneDeep(eyeObject)
+    _.cloneDeep(eyeObject),
     _.cloneDeep(skullObject),
     _.cloneDeep(faceObject),
     _.cloneDeep(neckObject),
@@ -429,7 +428,7 @@ createBodyPlan("winged  quadruped",[
     "left hind foot"],
     "majorWoundthreshold":1/3}),
     _.cloneDeep(tailObject),
-    _.cloneDeep(vitals),
+    _.cloneDeep(vitalsObject),
 
 ],[{name:"eye",space:0},
 {name:"skull",space:2},
@@ -448,7 +447,7 @@ createBodyPlan("hexapod",[
     _.cloneDeep(skullObject),
     _.cloneDeep(faceObject),
     _.cloneDeep(neckObject),
-    _.cloneDeep(foreleg),
+    _.cloneDeep(forelegObject),
     _.cloneDeep(torsoObject),
     _.cloneDeep(midLegObject),
     _.cloneDeep(groinObject),
@@ -465,7 +464,7 @@ createBodyPlan("hexapod",[
         "left hind foot"],
         "majorWoundthreshold":1/3}),
     _.cloneDeep(midLegObject),
-    _.cloneDeep(vitals),
+    _.cloneDeep(vitalsObject),
 
 ],[{name:"eye",space:0},
 {name:"skull",space:2},
@@ -586,7 +585,7 @@ createBodyPlan("winged serpents",[
 {name:"face",space:1},
 {name:"neck",space:3},
 {name:"torso",space:6},
-{name:"wing",space:4}
+{name:"wing",space:4},
 {name:"vitals",space:0}])
 
 createBodyPlan("octopod",[
@@ -663,7 +662,7 @@ createBodyPlan("squid",[
     },{
         missHitTorso:1,
         allow:["impaling",/\w* piercing/,"tight-beam burning"],
-        "majorWoundthreshold":1/10})
+        "majorWoundthreshold":1/10}),
     _.cloneDeep(brainObject),
     _.cloneDeep(faceObject),
     _.cloneDeep(neckObject),
@@ -823,7 +822,7 @@ createBodyPlan("ichthyoid",[
     },{
         missHitTorso:1,
         allow:["impaling",/\w* piercing/,"tight-beam burning"],
-        "majorWoundthreshold":1/10})
+        "majorWoundthreshold":1/10}),
     _.cloneDeep(skullObject),
     _.cloneDeep(faceObject),
     _.cloneDeep(finObject),
